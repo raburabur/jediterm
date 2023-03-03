@@ -41,6 +41,7 @@ public class JediTerminal implements Terminal, TerminalMouseListener, TerminalCo
 
   private int myScrollRegionTop;
   private int myScrollRegionBottom;
+  private int bottomMargin = 0;
   volatile private int myCursorX = 0;
   volatile private int myCursorY = 1;
 
@@ -695,6 +696,7 @@ public class JediTerminal implements Terminal, TerminalMouseListener, TerminalCo
     }
     myScrollRegionTop = Math.max(1, top);
     myScrollRegionBottom = Math.min(myTerminalHeight, bottom);
+    bottomMargin = myTerminalHeight - myScrollRegionBottom;
 
     //DECSTBM moves the cursor to column 1, line 1 of the page
     cursorPosition(1, 1);
@@ -1114,10 +1116,10 @@ public class JediTerminal implements Terminal, TerminalMouseListener, TerminalCo
       myCursorY = cursorY;
       myCursorX = Math.min(cursorX, myTerminalWidth - 1);
       myDisplay.setCursor(myCursorX, myCursorY);
+      myScrollRegionBottom = myTerminalHeight - bottomMargin;
 
       myTabulator.resize(myTerminalWidth);
     });
-    myScrollRegionBottom += myTerminalHeight - oldHeight;
   }
 
   public static @NotNull TermSize ensureTermMinimumSize(@NotNull TermSize termSize) {
