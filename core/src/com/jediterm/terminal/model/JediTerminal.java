@@ -71,6 +71,7 @@ public class JediTerminal implements Terminal, TerminalMouseListener, TerminalCo
   private TerminalOutputStream myTerminalOutput = null;
 
   private MouseMode myMouseMode = MouseMode.MOUSE_REPORTING_NONE;
+  private boolean manualMouseMode = true;
   private Point myLastMotionReport = null;
   private boolean myCursorYChanged;
 
@@ -981,6 +982,7 @@ public class JediTerminal implements Terminal, TerminalMouseListener, TerminalCo
   public void setMouseMode(@NotNull MouseMode mode) {
     myMouseMode = mode;
     myDisplay.terminalMouseModeSet(mode);
+    manualMouseMode = true;
   }
 
   @Override
@@ -1034,6 +1036,12 @@ public class JediTerminal implements Terminal, TerminalMouseListener, TerminalCo
   @Override
   public void setMouseFormat(MouseFormat mouseFormat) {
     myMouseFormat = mouseFormat;
+    if(mouseFormat == MouseFormat.MOUSE_FORMAT_SGR && this.myMouseMode == MouseMode.MOUSE_REPORTING_NONE) {
+      setMouseMode(MouseMode.MOUSE_REPORTING_BUTTON_MOTION);
+      manualMouseMode = false;
+    } else if (mouseFormat != MouseFormat.MOUSE_FORMAT_SGR && !manualMouseMode) {
+      setMouseMode(MouseMode.MOUSE_REPORTING_NONE);
+    }
   }
 
   private void adjustXY(int dirX) {
