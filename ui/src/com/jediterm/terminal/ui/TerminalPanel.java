@@ -131,7 +131,7 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
     terminalTextBuffer.addTypeAheadModelListener(this::repaint);
   }
 
-  void setTypeAheadManager(@NotNull TerminalTypeAheadManager typeAheadManager) {
+  public void setTypeAheadManager(@NotNull TerminalTypeAheadManager typeAheadManager) {
     myTypeAheadManager = typeAheadManager;
   }
 
@@ -1041,7 +1041,7 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
   }
 
   @NotNull
-  KeyListener getTerminalKeyListener() {
+  public KeyListener getTerminalKeyListener() {
     return myTerminalKeyHandler;
   }
 
@@ -1386,12 +1386,11 @@ public class TerminalPanel extends JComponent implements TerminalDisplay, Termin
 
   private @NotNull java.awt.Color getStyleForeground(@NotNull TextStyle style) {
     java.awt.Color foreground = getPaletteForeground(myStyleState.getForeground(style.getForegroundForRun()));
-    if (style.hasOption(Option.DIM)) {
+    if (style.hasOption(TextStyle.Option.DIM)) {
       java.awt.Color background = getPaletteBackground(myStyleState.getBackground(style.getBackgroundForRun()));
-      foreground = new java.awt.Color((foreground.getRed() + background.getRed()) / 2,
-                             (foreground.getGreen() + background.getGreen()) / 2,
-                             (foreground.getBlue() + background.getBlue()) / 2,
-                             foreground.getAlpha());
+      foreground = ColorUtil.lessIntensity(foreground, background);
+    } else if(style.hasOption(TextStyle.Option.BOLD)) {
+      foreground = ColorUtil.moreIntensity(foreground);
     }
     return foreground;
   }
